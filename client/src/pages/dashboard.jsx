@@ -3,6 +3,8 @@ import { useLocation } from "react-router-dom";
 import userAPI from "../api/userAPI";
 import SideBar from "../components/sideBar";
 import { getTotalBalances } from "../repos/pool/functions/getTotalBalances";
+import { compareByValue } from "../utils/compareByValue";
+import { sortDictionary } from "../utils/sortDictionary";
 
 const DashboardPage = () => {
     const loc = useLocation();
@@ -18,7 +20,7 @@ const DashboardPage = () => {
 
     // 미구현
     const [deltaDepositUSD, setDeltaDepositUSD] = useState(0);
-    const [weekDepositUSD, setWeekDepositUSD] = useState(0);
+    const [weekDepositUSD, setWeekDepositUSD] = useState({});
 
     const [tokenAllocation, setTokenAllocation] = useState({});
     const [poolAllocation, setPoolAllocation] = useState({});
@@ -144,8 +146,10 @@ const DashboardPage = () => {
 
         if(totalTokenUSD === 0){
             Object.keys(totalPools).forEach((pool)=>{
+                const dex = pool.split("/")[0];
                 const { value } = totalPools[pool];
-                poolAllocation[pool] = value / totalPoolUSD;
+                if(poolAllocation[dex] === undefined) poolAllocation[dex] = value / totalPoolUSD;
+                else poolAllocation[dex] += value / totalPoolUSD;
             })
             setPoolAllocation(poolAllocation);
         } else if(totalPoolUSD === 0){
@@ -160,8 +164,10 @@ const DashboardPage = () => {
                 tokenAllocation[token] = value / totalTokenUSD;
             })
             Object.keys(totalPools).forEach((pool)=>{
+                const dex = pool.split("/")[0];
                 const { value } = totalPools[pool];
-                poolAllocation[pool] = value / totalPoolUSD;
+                if(poolAllocation[dex] === undefined) poolAllocation[dex] = value / totalPoolUSD;
+                else poolAllocation[dex] += value / totalPoolUSD;
             })
 
             setTokenAllocation(tokenAllocation);
@@ -176,7 +182,29 @@ const DashboardPage = () => {
     }, [tokenAllocation, poolAllocation]);
 
     return (
-        <SideBar />
+        <div>
+            <SideBar />
+            <div>총 자산 ${totalDepositUSD.toFixed(2)}</div>
+            <div>총 자산 변동액 1D()</div>
+            <div>자산 비율 지갑:{(totalTokenUSD / totalDepositUSD).toFixed(2)}% DEX: {(totalPoolUSD / totalDepositUSD).toFixed(2)}%</div>
+            <div>총 자산 변동 그래프</div>
+            <div>Token Allocation</div>
+            <div>{Object.keys(sortDictionary(tokenAllocation)).map((token)=>{
+                return (<div>{token} {tokenAllocation[token].toFixed(2)}</div>);
+            })}</div>
+            <div>Protocol Allocation</div>
+            <div>{Object.keys(sortDictionary(poolAllocation)).map((pool)=>{
+                return (<div>{pool} {poolAllocation[pool].toFixed(2)}</div>);
+            })}</div>
+            <div>Wallet</div>
+            <div>{Object.keys(compareByValue(totalTokens)).map((token)=>{
+                return (<div>{token} {(totalTokens[token].amount).toFixed(4)}개 ${(totalTokens[token].price).toFixed(4)} ${(totalTokens[token].value).toFixed(4)}</div>);
+            })}</div>
+            <div>Farming</div>
+            <div>{Object.keys(compareByValue(totalPools)).map((pool)=>{
+                return (<div>{pool} {(totalPools[pool].amount0).toFixed(4)} - {(totalPools[pool].amount1).toFixed(4)} ${(totalPools[pool].value).toFixed(4)}</div>);
+            })}</div>
+        </div>
     )
 }
 
