@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import historyAPI from "../api/historyAPI";
 import userAPI from "../api/userAPI";
 import SideBar from "../components/sideBar";
+import { getUpbitBalance } from "../repos/cex/getUpbitBalance";
 import { getTotalBalances } from "../repos/pool/functions/getTotalBalances";
 import { compareByValue } from "../utils/compareByValue";
 import { formatDate } from "../utils/formatDate";
@@ -18,9 +19,9 @@ const DashboardPage = () => {
     const [totalPools, setTotalPools] = useState({});
     const [totalTokenUSD, setTotalTokenUSD] = useState(0);
     const [totalPoolUSD, setTotalPoolUSD] = useState(0);
+    const [totalCEXUSD, setTotalCEXUSD] = useState(0);
     const [totalDepositUSD, setTotalDepositUSD] = useState(0);
 
-    // 미구현
     const [yesterDayDepositUSD, setYesterdayDepositUSD] = useState(0);
     const [deltaDepositUSD, setDeltaDepositUSD] = useState(0);
     const [weekDepositUSD, setWeekDepositUSD] = useState({});
@@ -108,8 +109,31 @@ const DashboardPage = () => {
 
         // 모든 프로미스가 완료될 때까지 기다립니다.
         Promise.all(promises).then(()=>{
-            setTotalTokens(totalTokens);
             setTotalPools(totalPools);
+
+            getUpbitBalance().then((tokens)=>{
+                let totalCEXUSD = 0;
+                tokens.forEach((token)=>{
+                    const symbol = token.tokenInfo.symbol;
+                    const amount = Number(token.balance) / Math.pow(10, Number(token.tokenInfo.decimals));
+                    const price = token.tokenInfo.price.rate;
+                    const value = amount * price;
+                    totalCEXUSD += value;
+                    if(totalTokens[symbol] === undefined) {
+                        totalTokens[symbol] = {
+                            amount,
+                            price,
+                            value,
+                        };
+                    } else{
+                        totalTokens[symbol].amount += amount;
+                        totalTokens[symbol].value += value;
+                    }
+                })
+
+                setTotalCEXUSD(totalCEXUSD);
+                setTotalTokens(totalTokens);
+            });
         })
     }, [wallets]);
 
@@ -216,7 +240,7 @@ const DashboardPage = () => {
             <SideBar />
             <div>총 자산 ${totalDepositUSD.toFixed(2)}</div>
             <div>총 자산 변동액 1D(${deltaDepositUSD})</div>
-            <div>자산 비율 지갑:{(totalTokenUSD / totalDepositUSD).toFixed(2)}% DEX: {(totalPoolUSD / totalDepositUSD).toFixed(2)}%</div>
+            <div>자산 비율 지갑:{((totalTokenUSD - totalCEXUSD) / totalDepositUSD).toFixed(2)}% DEX: {(totalPoolUSD / totalDepositUSD).toFixed(2)}% 거래소:{((totalCEXUSD) / totalDepositUSD).toFixed(2)}%</div>
             <div>총 자산 변동 그래프</div>
             <div>Token Allocation</div>
             <div>{Object.keys(sortDictionary(tokenAllocation)).map((token)=>{

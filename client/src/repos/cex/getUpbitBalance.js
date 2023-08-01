@@ -1,31 +1,36 @@
-const axios = require('axios')
-const { v4: uuidv4 } = require("uuid")
-const sign = require('jsonwebtoken').sign
-
-const access_key = "CtlxwKO2IfgcvBJKnWUfa4OqyYmYa94BezDvqzxP"
-const secret_key = "JpaAEPu6KiQEcxAdkRdaxx2gCf5kKWysFvX9Hljq"
-
-const payload = {
-    access_key: access_key,
-    nonce: uuidv4(),
-}
-
-const token = sign(payload, secret_key);
-
-const options = {
-    method: "GET",
-    url: "https://api.upbit.com/v1/accounts",
-    headers: { Authorization: `Bearer ${token}` },
-}
+import authAPI from "../../api/authAPI"
+import { v4 as uuidv4 } from "uuid"
 
 const getUpbitBalance = async () => {
-    const response = await axios(options.url, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
+    const access_key = "CtlxwKO2IfgcvBJKnWUfa4OqyYmYa94BezDvqzxP"
+    const secret_key = "JpaAEPu6KiQEcxAdkRdaxx2gCf5kKWysFvX9Hljq"
+
+    const payload = {
+        access_key: access_key,
+        nonce: uuidv4(),
+    }
+
+    const response = await authAPI.post("/get-upbit-tokens", {
+        payload: payload,
+        secret_key: secret_key,
     });
 
-    return response.data;
+    const tokens = response.data.data.map((token) => {
+        const { currency, balance, avg_buy_price } = token;
+        return {
+            balance: Number(balance),
+            tokenInfo: {
+                symbol: currency,
+                price: {
+                    rate: Number(avg_buy_price),
+                },
+                decimals: 0,
+            }
+        }
+    });
+
+    console.log(tokens);
+    return tokens;
 }
 
-getUpbitBalance().then((data) => console.log(data));
+export { getUpbitBalance };

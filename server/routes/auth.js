@@ -1,4 +1,6 @@
 const express = require("express");
+const axios = require("axios");
+const { sign } = require("jsonwebtoken");
 
 // User와 Auth 모델 생성
 const { User } = require("../models/User");
@@ -60,5 +62,21 @@ router.post("/google", async (req, res) => {
         console.error(error); res.status(500).json({ message: "Server error" });
     }
 });
+
+router.post("/get-upbit-tokens", async (req, res) => {
+    const { payload, secret_key } = req.body;
+    const token = sign(payload, secret_key);
+    const apiURL = "https://api.upbit.com/v1/accounts";
+
+    const response = await axios(apiURL, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    const data = response.data;
+
+    res.status(200).json({ data });
+})
 
 module.exports = router;
