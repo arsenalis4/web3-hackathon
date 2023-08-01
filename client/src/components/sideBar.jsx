@@ -20,6 +20,14 @@ const SideBar = () => {
         });
     };
 
+    const goToPool = () => {
+        navigate('/pool', {
+            state: {
+                email: email
+            }
+        });
+    };
+
     const goToHistory = () => {
         navigate('/history', {
             state: {
@@ -42,21 +50,15 @@ const SideBar = () => {
     };
 
     return (
-        <div className="sidebar">
-            <ul>
-                <li>
-                    <button onClick={goToDashBoard}>Dashboard</button>
-                </li>
-                <li>
-                    <button onClick={goToHistory}>History</button>
-                </li>
-                <li>
-                    <button onClick={goToWallet}>My Wallet</button>
-                </li>
-                <li>
-                    <button onClick={logout}>Logout</button>
-                </li>
-            </ul>
+        <div className="sideBar">
+            <div className='image'><img src={"img/Logo Image.svg"} /></div>
+            <div className='sideBarMenu'>
+                <div className="menuItem" onClick={goToDashBoard}>DASHBOARD</div>
+                <div className="menuItem" onClick={goToPool}>POOL</div>
+                <div className="menuItem" onClick={goToHistory}>HISTORY</div>
+                <div className="menuItem" onClick={goToWallet}>MY WALLET</div>
+                <div className="menuItem" onClick={logout}>LOG OUT</div>
+            </div>
         </div>
     );
 }
