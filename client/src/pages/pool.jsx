@@ -5,12 +5,14 @@ import userAPI from "../api/userAPI";
 import SideBar from "../components/sideBar";
 import { getUpbitBalance } from "../repos/cex/getUpbitBalance";
 import { getTotalBalances } from "../repos/pool/functions/getTotalBalances";
+import { compareByValue } from "../utils/compareByValue";
 import { formatDate } from "../utils/formatDate";
-import LineChart from "../components/lineChart";
-import BarChart from "../components/barChart";
-import HistoryItem from "../components/historyItem";
+import { sortDictionary } from "../utils/sortDictionary";
+import TokenPieChart from "../components/tokenPieChart";
+import PoolPieChart from "../components/poolPieChart";
+import { recommendUniswapV3Pool } from "../repos/pool/functions/recommendUniswapV3Pool";
 
-const HistoryPage = () => {
+const PoolPage = () => {
     const loc = useLocation();
     const state = loc.state;
     const email = state.email;
@@ -25,37 +27,12 @@ const HistoryPage = () => {
 
     const [yesterDayDepositUSD, setYesterdayDepositUSD] = useState(0);
     const [deltaDepositUSD, setDeltaDepositUSD] = useState(0);
-    const [weekDepositUSD, setWeekDepositUSD] = useState([]);
     const [dailyRate, setDailyRate] = useState(0);
 
-    const [userHistory, setUserHistory] = useState([]);
+    const [tokenAllocation, setTokenAllocation] = useState({});
+    const [poolAllocation, setPoolAllocation] = useState({});
 
-    // array를 csv 문자열로 변환하는 함수
-    function arrayToCSV(array) {
-        // array의 각 요소를 JSON 형식의 문자열로 변환하고 쉼표로 구분하고 줄바꿈 문자로 연결한다
-        return array.map(element => JSON.stringify(element)).join("\n");
-    }
-
-    // csv 파일을 다운로드하는 함수
-    const downloadCSV = (array) => {
-        // array를 csv 문자열로 변환한다
-        let csv = arrayToCSV(array);
-        // csv 문자열을 blob 객체로 만든다
-        let blob = new Blob([csv], { type: "text/csv" });
-        // blob 객체를 URL로 만든다
-        let url = URL.createObjectURL(blob);
-        // a 태그를 생성하고 href 속성에 URL을 지정한다
-        let a = document.createElement("a");
-        a.href = url;
-        // download 속성에 파일명을 지정한다
-        a.download = "userHistory.csv";
-        // a 태그를 body에 추가한다
-        document.body.appendChild(a);
-        // a 태그를 클릭하여 다운로드를 시작한다
-        a.click();
-        // a 태그를 body에서 제거한다
-        document.body.removeChild(a);
-    }
+    const [recommendedUniswapPool, setRecommendedUniswapPool] = useState([]);
 
     useEffect(() => {
         userAPI.post("/get-wallets", {
@@ -69,14 +46,6 @@ const HistoryPage = () => {
         }).then(res => {
             setYesterdayDepositUSD(res.data);
         })
-
-        historyAPI.post("/get-all-history", {
-            email: email
-        }).then(res => {
-            const history = res.data;
-            const reversedHistory = [...history].reverse();
-            setUserHistory(reversedHistory);
-        });
     }, []);
 
     useEffect(() => {
@@ -169,6 +138,9 @@ const HistoryPage = () => {
 
                 setTotalCEXUSD(totalCEXUSD);
                 setTotalTokens(totalTokens);
+                recommendUniswapV3Pool(totalTokens).then((pools) => {
+                    setRecommendedUniswapPool(pools);
+                })
             });
         })
     }, [wallets]);
@@ -212,31 +184,51 @@ const HistoryPage = () => {
     }, [totalTokens, totalPools, yesterDayDepositUSD]);
 
     useEffect(() => {
-        historyAPI.post("/get-week-value", {
-            email: email
-        }).then(res => {
-            const todayDate = formatDate(0);
-            const todayValue = {
-                date: todayDate,
-                totalValue: totalDepositUSD
-            }
-
-            const weekValue = res.data;
-            weekValue.push(todayValue);
-            setWeekDepositUSD(weekValue);
-        });
-    }, [totalDepositUSD]);
-
-    useEffect(() => {
         setDeltaDepositUSD(totalDepositUSD - yesterDayDepositUSD);
         setDailyRate(((totalDepositUSD - yesterDayDepositUSD) / yesterDayDepositUSD * 100).toFixed(2));
-    }, [totalDepositUSD, yesterDayDepositUSD]);
+    }, [totalDepositUSD, yesterDayDepositUSD])
+
+    useEffect(() => {
+        if (totalDepositUSD === 0) return;
+        const tokenAllocation = {};
+        const poolAllocation = {};
+
+        if (totalTokenUSD === 0) {
+            Object.keys(totalPools).forEach((pool) => {
+                const dex = pool.split("/")[0];
+                const { value } = totalPools[pool];
+                if (poolAllocation[dex] === undefined) poolAllocation[dex] = value / totalPoolUSD;
+                else poolAllocation[dex] += value / totalPoolUSD;
+            })
+            setPoolAllocation(poolAllocation);
+        } else if (totalPoolUSD === 0) {
+            Object.keys(totalTokens).forEach((token) => {
+                const { value } = totalTokens[token];
+                tokenAllocation[token] = value / totalTokenUSD;
+            })
+            setTokenAllocation(tokenAllocation);
+        } else {
+            Object.keys(totalTokens).forEach((token) => {
+                const { value } = totalTokens[token];
+                tokenAllocation[token] = value / totalTokenUSD;
+            })
+            Object.keys(totalPools).forEach((pool) => {
+                const dex = pool.split("/")[0];
+                const { value } = totalPools[pool];
+                if (poolAllocation[dex] === undefined) poolAllocation[dex] = value / totalPoolUSD;
+                else poolAllocation[dex] += value / totalPoolUSD;
+            })
+
+            setTokenAllocation(tokenAllocation);
+            setPoolAllocation(poolAllocation);
+        }
+    }, [totalTokens, totalPools, totalTokenUSD, totalPoolUSD, totalDepositUSD]);
 
     return (
         <div className="page">
-            <SideBar height={"150vh"} />
-            <div className="dashboard">
-                <div className="coreView">
+            <SideBar height={"150vh"}/>
+            <div className="poolContent">
+                <div className="coreView" style={{"height": "50vh"}}>
                     <div className="coreWorth">
                         <div className="title">NET WORTH</div>
                         <div className="netWorth">
@@ -244,50 +236,49 @@ const HistoryPage = () => {
                             <div className="dailyRate">{dailyRate}%</div>
                         </div>
                     </div>
-                    <div className="subWorth">
-                        <div className="subView">
-                            <div className="title">CLAIMABLE</div>
-                            <div>N/A</div>
+                    <div className="pieView" style={{"padding-left": "0vh"}}>
+                        <div className="pie">
+                            <div className="title">TOKEN ALLOCATION</div>
+                            <div><TokenPieChart tokenAllocation={tokenAllocation} /></div>
                         </div>
-                        <div className="subView">
-                            <div className="title">TOTAL ASSET</div>
-                            <div>$ {totalDepositUSD.toFixed(2)}</div>
-                        </div>
-                        <div className="subView">
-                            <div className="title">TOTAL DEBT</div>
-                            <div>N/A</div>
+                        <div className="pie">
+                            <div className="title">PROTOCOL ALLOCATION</div>
+                            <div><PoolPieChart poolAllocation={poolAllocation} /></div>
                         </div>
                     </div>
-                    <div className="barView">
-                        <BarChart totalCEXUSD={totalCEXUSD} totalDepositUSD={totalDepositUSD} totalPoolUSD={totalPoolUSD} totalTokenUSD={totalTokenUSD} />
-                        <div className="barChartName">
-                            <img src="img/Bar Chart Name.svg" />
-                        </div>
-                    </div>
-                </div>
-                <div className="graphView">
-                    <div className="graphSubWorth">
-                        <div className="title">NET WORTH GRAPH</div>
-                        <div className="deltaDeposit">{(deltaDepositUSD > 0) ? `+ $ ${Math.abs(deltaDepositUSD).toFixed(2)}` : ((deltaDepositUSD === 0) ? "$ 0" : `- $ ${Math.abs(deltaDepositUSD).toFixed(2)}`)}</div>
-                    </div>
-                    <LineChart weekDepositUSD={weekDepositUSD} />
                 </div>
                 <div className="listView">
                     <div className="view">
-                        <div className="graphSubWorth" style={{ "padding-left": "7.5vw" }}>
-                            <div className="title">HISTORY</div>
-                            <div>
-                                <img src="img/_Button_.svg" onClick={() => { downloadCSV(userHistory) }} />
-                            </div>
-                        </div>
-                        <div style={{ "display": "flex", "justify-content": "center" }}>
-                            <div className="scrollView" style={{ "min-height": "50vh", "max-height": "50vh" }}>
-                                {userHistory.map((history, index) => {
-                                    return (
-                                        <HistoryItem history={history} index={index} userHistory={userHistory} />
-                                    );
-                                })}
-                            </div>
+                        <div className="title" style={{ "padding-left": "7.5vw" }}>DEX POOLS</div>
+                        <div style={{"color": "white", "padding-left": "7.5vw", "font-size": "1.25rem"}}>"What is the most suitable DEX Pool for my crypto asset portfolio?"</div>
+                        <div style={{"display": "flex", "justify-content": "center"}}><div className="scrollView" style={{"min-height": "50vh", "max-height": "50vh"}}>
+                            {recommendedUniswapPool.map((pool) => {
+                                return (
+                                    <div className="scrollItem">
+                                        <div className="scrollField" style={{"alignItems": "center"}}>
+                                            <div>{`${pool.token0Symbol}-${pool.token1Symbol}`}</div>
+                                        </div>
+                                        <div className="scrollField" style={{"alignItems": "center"}}>
+                                            <div>{pool.dex}</div>
+                                        </div>
+                                        <div className="scrollField" style={{"alignItems": "center"}}>
+                                            <div>FEE TIER</div>
+                                            <div>{Number(pool.feeTier) / 1e5}</div>
+                                        </div>
+                                        <div className="scrollField" style={{"alignItems": "center"}}>
+                                            <div>APY</div>
+                                            <div>N/A</div>
+                                        </div>
+                                        <div className="scrollField" style={{"alignItems": "center"}}>
+                                            <div>TVL</div>
+                                            <div>{`$${(Number(pool.tvl) / 1e6).toFixed(2)}M`}</div>
+                                        </div>
+                                        <div className="scrollField" style={{"alignItems": "center"}}>
+                                            <div className="addBtn"><a href="https://app.uniswap.org/" style={{"text-decoration": "none", "color": "white"}}>ADD</a></div>
+                                        </div>
+                                    </div>
+                                );
+                            })}</div>
                         </div>
                     </div>
                 </div>
@@ -296,4 +287,4 @@ const HistoryPage = () => {
     )
 }
 
-export default HistoryPage;
+export default PoolPage;

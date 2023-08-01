@@ -1,0 +1,329 @@
+.sideBar{
+  max-width: 15vw;
+  min-width: 15vw;
+  height: 250vh;
+  background-color: #141414;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 3rem;
+}
+
+.sideBarMenu{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 5rem;
+  align-items: flex-start;
+  /* padding-left: 3rem; */
+}
+
+.loginPage{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 100vh;
+  background-color: #141414;
+}
+
+.logo > img{
+  width: 50vw;
+}
+
+.menuItem{
+  color: white;
+  height: 10vh;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menuText{
+  margin-left: 1.5rem;
+}
+
+.image{
+  max-width: 12.5vw;
+}
+
+.page{
+  display: flex;
+  flex-direction: row;
+}
+
+.dashboard{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: black;
+  justify-content: space-evenly;
+}
+
+.scrollView{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 30vh;
+  max-height: 30vh;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  overflow: scroll;
+  width: 70vw;
+  overflow-x:hidden;
+  align-items: center;
+}
+
+.scrollItem{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: 8vh;
+  max-height: 8vh;
+  background-color: #FFFFFF14;
+  width: 100%;
+  justify-content: center;
+}
+
+.scrollField{
+  width: 15vw;
+  height: 100%;
+  /* background-color: #FFFFFF14; */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  justify-content: center;
+}
+
+.netWorthText{
+  color: white;
+  font-size: 1.5rem;
+}
+
+.dailyRate{
+  color: #3C89E8;
+  border-radius: 4px;
+  width: 5vw;
+  height: 3vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed var(--color-border, #424242);
+}
+
+.title{
+  color: #ffffff74;
+}
+
+.view{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  gap: 1rem;
+}
+
+.coreView{
+  display: flex;
+  flex-direction: column;
+  margin-left: 7.5vw;
+  height: 40vh;
+  justify-content: space-around;
+}
+
+.coreWorth{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.netWorth{
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.subWorth{
+  display: flex;
+  gap: 5rem;
+}
+
+.subView{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  color: white;
+  align-items: center;
+}
+
+.barView{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 65vw;
+}
+
+.barChartName{
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+}
+
+.listView{
+  min-height: 80vh;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.graphView{
+  min-height: 30vh;
+  max-height: 30vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.graphSubWorth {
+  display: flex;
+  justify-content: space-between;
+  width: 70vw;
+}
+
+.deltaDeposit{
+  color: #3C89E8;
+}
+
+.pieView{
+  min-height: 30vh;
+  max-height: 30vh;
+  display: flex;
+  flex-direction: row;
+  width: 65vw;
+  padding-left: 7.5vw;
+  justify-content: space-between;
+}
+
+.pie{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 1rem;
+}
+
+.poolContent{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: black;
+  justify-content: space-evenly;
+}
+
+.addBtn{
+  width: 5rem;
+  height: 3vh;
+  border-radius: 2px;
+  border: 1px solid var(--primary-6, #1890FF);
+  background: var(--primary-6, #1890FF);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.collapse-content {
+  display: none;
+}
+
+.collapse-content.show {
+  display: block;
+}
+
+.connectView{
+  display: flex;
+  flex-direction: column;
+  height: 30vh;
+  justify-content: space-evenly;
+  margin-left: 7.5vw;
+}
+
+.connectBtns{
+  display: flex;
+  flex-direction: row;
+  gap: 3rem;
+}
+
+.connectCEXView{
+  display: flex;
+  flex-direction: row;
+  gap: 3rem;
+  margin-left: 7.5vw;
+}
+
+.walletBox{
+  display: flex;
+  margin-left: 7.5vw;
+  width: 65vw;
+  height: 5vh;
+}
+
+.walletItem{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.walletItem > img{
+  height: 100%;
+}
+
+.walletView{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.addWalletModal{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  flex-direction: column;
+  gap: 1rem;
+  width: 30vw;
+  height: 60vh;
+  background-color: #141414;
+  border-radius: 4px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.addWalletModalInput{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 3vh;
+}
+
+.addWalletModalSelect{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.modalBtn{
+  width: 5rem;
+  height: 5vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  border-radius: 4px;
+}
