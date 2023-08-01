@@ -38,15 +38,19 @@ async function recommendUniswapV3Pool(tokens) {
         }
       `;
     const data = await request(endpoint, query);
-
-    // 쿼리 결과가 있으면, pool의 목록을 출력합니다.
+    
+    // 쿼리 결과가 있으면, pool의 정보를 담은 객체의 배열을 반환합니다.
     if (data.pools.length > 0) {
-      console.log(`당신이 가진 토큰들로 구매할 수 있는 Uniswap V3 pool의 목록입니다.`);
-      for (const pool of data.pools) {
-        console.log(
-          `- ${pool.token0.symbol}-${pool.token1.symbol} ${pool.feeTier}: 유동성 ${pool.liquidity} ${pool.token0.symbol}, 거래량 ${pool.volumeUSD} USD`
-        );
-      }
+      return data.pools.map(pool => ({
+        token0Symbol: pool.token0.symbol,
+        token1Symbol: pool.token1.symbol,
+        dex: "Uniswap V3",
+        tvl: pool.totalValueLockedUSD,
+        feeTier: pool.feeTier
+      }));
+    } else {
+      // 쿼리 결과가 없으면, 빈 배열을 반환합니다.
+      return [];
     }
   }
 
@@ -57,7 +61,9 @@ async function recommendUniswapV3Pool(tokens) {
       promises.push(queryPool(addresses[i], addresses[j]));
     }
   }
-  await Promise.all(promises);
+  // 모든 프로미스가 완료되면, 결과를 합쳐서 반환합니다.
+  const results = await Promise.all(promises);
+  return results.flat();
 }
 
 export { recommendUniswapV3Pool };
