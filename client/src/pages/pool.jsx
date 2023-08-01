@@ -139,7 +139,6 @@ const PoolPage = () => {
                 setTotalCEXUSD(totalCEXUSD);
                 setTotalTokens(totalTokens);
                 recommendUniswapV3Pool(totalTokens).then((pools) => {
-                    console.log(pools);
                     setRecommendedUniswapPool(pools);
                 })
             });
