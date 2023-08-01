@@ -54,11 +54,11 @@ const SideBar = (props) => {
         <div className="sideBar" style={{"height": height}}>
             <div className='image'><img src={"img/Logo Image.svg"} /></div>
             <div className='sideBarMenu'>
-                <div className="menuItem" onClick={goToDashBoard}>DASHBOARD</div>
-                <div className="menuItem" onClick={goToPool}>POOL</div>
-                <div className="menuItem" onClick={goToHistory}>HISTORY</div>
-                <div className="menuItem" onClick={goToWallet}>MY WALLET</div>
-                <div className="menuItem" onClick={logout}>LOG OUT</div>
+                <div className="menuItem" onClick={goToDashBoard}><div className='menuText'>DASHBOARD</div></div>
+                <div className="menuItem" onClick={goToPool}><div className='menuText'>POOL</div></div>
+                <div className="menuItem" onClick={goToHistory}><div className='menuText'>HISTORY</div></div>
+                <div className="menuItem" onClick={goToWallet}><div className='menuText'>MY WALLET</div></div>
+                <div className="menuItem" onClick={logout}><div className='menuText'>LOG OUT</div></div>
             </div>
         </div>
     );
