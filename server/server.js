@@ -29,10 +29,12 @@ app.use(cors({
 // router 객체 불러오기
 const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
+const historyRouter = require("./routes/history");
 
 // router 객체 사용하기
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/history", historyRouter);
 
 // 서버 시작
 app.listen(PORT, () => {

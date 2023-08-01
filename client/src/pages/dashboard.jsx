@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import historyAPI from "../api/historyAPI";
 import userAPI from "../api/userAPI";
 import SideBar from "../components/sideBar";
 import { getTotalBalances } from "../repos/pool/functions/getTotalBalances";
 import { compareByValue } from "../utils/compareByValue";
+import { formatDate } from "../utils/formatDate";
 import { sortDictionary } from "../utils/sortDictionary";
 
 const DashboardPage = () => {
@@ -19,6 +21,7 @@ const DashboardPage = () => {
     const [totalDepositUSD, setTotalDepositUSD] = useState(0);
 
     // 미구현
+    const [yesterDayDepositUSD, setYesterdayDepositUSD] = useState(0);
     const [deltaDepositUSD, setDeltaDepositUSD] = useState(0);
     const [weekDepositUSD, setWeekDepositUSD] = useState({});
 
@@ -31,6 +34,12 @@ const DashboardPage = () => {
         }).then(res => {
             setWallets(res.data)
         });
+
+        historyAPI.post("/get-yesterday-value", {
+            email: email
+        }).then(res => {
+            setYesterdayDepositUSD(res.data);
+        })
     }, []);
     
     useEffect(() => {
@@ -99,7 +108,6 @@ const DashboardPage = () => {
 
         // 모든 프로미스가 완료될 때까지 기다립니다.
         Promise.all(promises).then(()=>{
-            console.log(totalTokens);
             setTotalTokens(totalTokens);
             setTotalPools(totalPools);
         })
@@ -141,7 +149,27 @@ const DashboardPage = () => {
             setTotalPoolUSD(depositPoolUSD);
             setTotalDepositUSD(depositUSD);
         }
-    }, [totalTokens, totalPools]);
+    }, [totalTokens, totalPools, yesterDayDepositUSD]);
+
+    useEffect(()=>{
+        historyAPI.post("/get-week-value", {
+            email: email
+        }).then(res => {
+            const todayDate = formatDate(0);
+            const todayValue = {
+                date: todayDate,
+                totalDepositUSD: totalDepositUSD
+            } 
+
+            const weekValue = res.data;
+            weekValue.push(todayValue);
+            setWeekDepositUSD(weekValue);
+        });
+    }, [totalDepositUSD])
+
+    useEffect(()=>{
+        setDeltaDepositUSD(totalDepositUSD - yesterDayDepositUSD);
+    }, [totalDepositUSD, yesterDayDepositUSD])
 
     useEffect(()=>{
         if(totalDepositUSD === 0) return;
@@ -187,7 +215,7 @@ const DashboardPage = () => {
         <div>
             <SideBar />
             <div>총 자산 ${totalDepositUSD.toFixed(2)}</div>
-            <div>총 자산 변동액 1D()</div>
+            <div>총 자산 변동액 1D(${deltaDepositUSD})</div>
             <div>자산 비율 지갑:{(totalTokenUSD / totalDepositUSD).toFixed(2)}% DEX: {(totalPoolUSD / totalDepositUSD).toFixed(2)}%</div>
             <div>총 자산 변동 그래프</div>
             <div>Token Allocation</div>

@@ -34,10 +34,6 @@ const job = schedule.scheduleJob("59 23 * * *", async () => {
         // calculateBalances 함수를 호출하여 totalTokens과 totalPools 값을 얻습니다.
         const { totalTokens, totalPools } = await calculateBalances(wallets);
 
-        // 결과를 콘솔에 출력합니다.
-        console.log(totalTokens);
-        console.log(totalPools);
-
         // userHistory에 totalTokens과 totalPools을 저장합니다.
         userHistory.history.push(
             {"date": date, "totalTokens": totalTokens, "totalPools": totalPools, "totalValue": calculateTotalUSD(totalTokens, totalPools)}
