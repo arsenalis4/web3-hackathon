@@ -2,7 +2,8 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { googleLogout } from '@react-oauth/google';
 
-const SideBar = () => {
+const SideBar = (props) => {
+    const { height } = props;
     const navigate = useNavigate();
     const loc = useLocation();
     const state = loc.state;
@@ -50,7 +51,7 @@ const SideBar = () => {
     };
 
     return (
-        <div className="sideBar">
+        <div className="sideBar" style={{"height": height}}>
             <div className='image'><img src={"img/Logo Image.svg"} /></div>
             <div className='sideBarMenu'>
                 <div className="menuItem" onClick={goToDashBoard}>DASHBOARD</div>

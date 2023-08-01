@@ -189,3 +189,23 @@
   height: 100%;
   gap: 1rem;
 }
+
+.poolContent{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: black;
+  justify-content: space-evenly;
+}
+
+.addBtn{
+  width: 5rem;
+  height: 3vh;
+  border-radius: 2px;
+  border: 1px solid var(--primary-6, #1890FF);
+  background: var(--primary-6, #1890FF);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
