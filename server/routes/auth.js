@@ -3,6 +3,7 @@ const express = require("express");
 // User와 Auth 모델 생성
 const { User } = require("../models/User");
 const { Auth } = require("../models/Auth");
+const { History } = require("../models/History")
 
 // router 객체 생성하기
 const router = express.Router();
@@ -40,6 +41,18 @@ router.post("/google", async (req, res) => {
             });
 
             await user.save();
+        }
+
+        // History 모델에서 email이 일치하는 문서 찾기 
+        let history = await History.findOne({ email });
+
+        // 없으면 새로운 히스토리 생성 및 저장하기
+        if(!history){
+            history = new History({
+                email,
+            });
+
+            await history.save();
         }
 
         res.status(200).json({ success: true });

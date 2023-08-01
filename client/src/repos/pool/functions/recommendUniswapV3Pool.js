@@ -95,6 +95,7 @@ async function recommendUniswapV3Pool(tokens) {
             liquidity
             volumeUSD
             feeTier
+            totalValueLockedUSD
           }
         }
       `;
