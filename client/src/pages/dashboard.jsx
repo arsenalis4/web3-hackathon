@@ -44,7 +44,7 @@ const DashboardPage = () => {
             const {ETH, tokens, pools} = await getTotalBalances(wallet);
 
             if(Number(ETH.balance) !== 0){
-                const ethAmount = Number(ETH.balance) / Math.pow(10, 18);
+                const ethAmount = Number(ETH.balance);
                 const ethPrice = ETH.price.rate;
                 const ethValue = ethAmount * ethPrice;
                 if(totalTokens["ETH"] === undefined){
@@ -52,6 +52,7 @@ const DashboardPage = () => {
                         amount: ethAmount,
                         price: ethPrice,
                         value: ethValue,
+                        address: "0x0000000000000000000000000000000000000000"
                     };
                 } else{
                     totalTokens["ETH"].amount += ethAmount;
@@ -64,12 +65,14 @@ const DashboardPage = () => {
                 const symbol = token.tokenInfo.symbol;
                 const amount = Number(token.balance) / Math.pow(10, Number(token.tokenInfo.decimals));
                 const price = token.tokenInfo.price.rate;
+                const address = token.tokenInfo.address;
                 const value = amount * price;
                 if(totalTokens[symbol] === undefined) {
                     totalTokens[symbol] = {
                         amount,
                         price,
-                        value
+                        value,
+                        address
                     };
                 } else{
                     totalTokens[symbol].amount += amount;
@@ -96,6 +99,7 @@ const DashboardPage = () => {
 
         // 모든 프로미스가 완료될 때까지 기다립니다.
         Promise.all(promises).then(()=>{
+            console.log(totalTokens);
             setTotalTokens(totalTokens);
             setTotalPools(totalPools);
         })
@@ -175,11 +179,9 @@ const DashboardPage = () => {
         }
     }, [totalTokens, totalPools, totalTokenUSD, totalPoolUSD, totalDepositUSD]);
 
-    useEffect(()=>{
-        if(Object.keys(tokenAllocation).length === 0 && Object.keys(poolAllocation).length === 0) return;
-        console.log(tokenAllocation);
-        console.log(poolAllocation);
-    }, [tokenAllocation, poolAllocation]);
+    // useEffect(()=>{
+    //     if(Object.keys(tokenAllocation).length === 0 && Object.keys(poolAllocation).length === 0) return;
+    // }, [tokenAllocation, poolAllocation]);
 
     return (
         <div>
