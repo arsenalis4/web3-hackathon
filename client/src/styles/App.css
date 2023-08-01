@@ -209,3 +209,11 @@
   justify-content: center;
   align-items: center;
 }
+
+.collapse-content {
+  display: none;
+}
+
+.collapse-content.show {
+  display: block;
+}
