@@ -211,6 +211,7 @@ const WalletPage = () => {
     const [inputAddress, setInputAddress] = useState("");
     const [clickInputAddressModal, setClickInputAddressModal] = useState("none");
     const [clickCEXModal, setClickCEXModal] = useState("none");
+    const [clickBinanceModal, setClickBinanceModal] = useState("none");
 
     // 네트워크 선택 변경 핸들러
     const handleNetworkChange = e => {
@@ -295,8 +296,8 @@ const WalletPage = () => {
                     <div className="title">WALLET & ACCOUNT</div>
                     <div style={{ "color": "white", "font-size": "1.25rem" }} >CONNECT YOUR CRYPTO WALLET & CEX ACCOUNT</div>
                     <div className="connectBtns">
-                        <div className="addBtn" style={{ "width": "15rem", "height": "5vh" }} onClick={() => { setClickInputAddressModal("flex"); setClickCEXModal("none"); }}>ADD CRYPTO WALLET</div>
-                        <div className="addBtn" style={{ "width": "15rem", "height": "5vh" }} onClick={() => { setClickInputAddressModal("none"); setClickCEXModal("flex"); }}>ADD CEX ACCOUNT</div>
+                        <div className="addBtn" style={{ "width": "15rem", "height": "5vh" }} onClick={() => { setClickInputAddressModal("flex"); setClickCEXModal("none"); setClickBinanceModal("none"); }}>ADD CRYPTO WALLET</div>
+                        <div className="addBtn" style={{ "width": "15rem", "height": "5vh" }} onClick={() => { setClickInputAddressModal("none"); setClickCEXModal("flex"); setClickBinanceModal("none"); }}>ADD CEX ACCOUNT</div>
                     </div>
                 </div>
                 <div className="connectCEXView">
@@ -331,26 +332,26 @@ const WalletPage = () => {
                 </div>
             </div>
             <div className="addWalletModal" style={{ "display": clickInputAddressModal }}>
-                <div style={{"color": "white"}} className="addWalletModalTitle">Track your crypto wallet address</div>
+                <div style={{ "color": "white" }} className="addWalletModalTitle">Track your crypto wallet address</div>
                 <div className="addWalletModalInput">
-                    <div style={{"color": "white", "font-size": "0.75rem", "white-space": "nowrap", "display": "flex", "align-items": "center"}}>Wallet address</div>
-                    <div style={{"width": "70%", "display": "flex"}}>
+                    <div style={{ "color": "white", "font-size": "0.75rem", "white-space": "nowrap", "display": "flex", "align-items": "center" }}>Wallet address</div>
+                    <div style={{ "width": "70%", "display": "flex" }}>
                         <div>
-                            <select value={selectedNetwork} onChange={handleNetworkChange} style={{"height": "100%"}}>
+                            <select value={selectedNetwork} onChange={handleNetworkChange} style={{ "height": "100%" }}>
                                 <option value="ethereum">ETH</option>
                             </select>
                         </div>
-                        <div style={{"width": "100%"}}>
-                            <input value={inputAddress} onChange={handleInputChange} style={{"width": "100%", "height": "100%"}}/>
+                        <div style={{ "width": "100%" }}>
+                            <input value={inputAddress} onChange={handleInputChange} style={{ "width": "100%", "height": "100%" }} />
                         </div>
                     </div>
                 </div>
                 <div className="addWalletModalSelect">
-                    <div className="modalBtn" style={{"border": "1px solid white"}} onClick={()=>{
+                    <div className="modalBtn" style={{ "border": "1px solid white" }} onClick={() => {
                         setClickInputAddressModal("none");
                         setInputAddress("");
                     }}>Cancel</div>
-                    <div className="modalBtn" style={{"border": "1px solid #3C89E8", "background-color": "#3C89E8"}} onClick={() => {
+                    <div className="modalBtn" style={{ "border": "1px solid #3C89E8", "background-color": "#3C89E8" }} onClick={() => {
                         handleAddClick();
                         setClickInputAddressModal("none");
                         setInputAddress("");
@@ -358,17 +359,55 @@ const WalletPage = () => {
                 </div>
             </div>
             <div className="addWalletModal" style={{ "display": clickCEXModal }}>
-                <div className="connectCEXView" style={{"margin-left": "0", "justifyContent": "center"}}>
-                    <div style={{"display": "flex", "flexDirection": "column", "alignItems": "center", "justifyContent": "space-between"}}>
-                        <div style={{"display": "flex"}}><img src="img/Upbit Image(Active).svg" style={{"max-width": "10vw", "height": "10vh", "position": "relative", "left": "0.5rem"}}/></div>
-                        <div className="modalBtn" style={{"border": "1px solid #3C89E8", "background-color": "#3C89E8", "width": "6.5rem"}} onClick={() => {
+                <div className="connectCEXView" style={{ "margin-left": "0", "justifyContent": "center" }}>
+                    <div style={{ "display": "flex", "flexDirection": "column", "alignItems": "center", "justifyContent": "space-between" }}>
+                        <div style={{ "display": "flex" }}><img src="img/Upbit Image(Active).svg" style={{ "max-width": "10vw", "height": "10vh", "position": "relative", "left": "0.5rem" }} /></div>
+                        <div className="modalBtn" style={{ "border": "1px solid #3C89E8", "background-color": "#3C89E8", "width": "6.5rem" }} onClick={() => {
                         }}>Connected</div>
                     </div>
-                    <div style={{"display": "flex", "flexDirection": "column", "alignItems": "center", "justifyContent": "space-between"}}>
-                        <div><img src="img/Binance Image (Inactive).svg" style={{"max-width": "10vw", "height": "10vh"}}/></div>
-                        <div className="modalBtn" style={{"border": "1px solid #3C89E8", "background-color": "#3C89E8", "width": "6.5rem"}} onClick={() => {
-                        }}>Connected</div>
+                    <div style={{ "display": "flex", "flexDirection": "column", "alignItems": "center", "justifyContent": "space-between" }}>
+                        <div><img src="img/Binance Image (Inactive).svg" style={{ "max-width": "10vw", "height": "10vh" }} /></div>
+                        <div className="modalBtn" style={{ "border": "1px solid #3C89E8", "background-color": "#3C89E8", "width": "6.5rem" }} onClick={() => {
+                            setClickInputAddressModal("none");
+                            setClickCEXModal("none");
+                            setClickBinanceModal("flex");
+                        }}>Connect</div>
                     </div>
+                </div>
+            </div>
+            <div className="addWalletModal" style={{ "display": clickBinanceModal }}>
+                {/*미구현*/}
+                <div style={{ "color": "white" }} className="addWalletModalTitle">Track your crypto wallet address</div>
+                <div className="addWalletModalInput">
+                    <div style={{ "color": "white", "font-size": "0.75rem", "white-space": "nowrap", "display": "flex", "align-items": "center" }}>Access key</div>
+                    <div style={{ "width": "70%", "display": "flex" }}>
+                        <div style={{ "width": "100%" }}>
+                            <input value={inputAddress} onChange={handleInputChange} style={{ "width": "100%", "height": "100%" }} />
+                        </div>
+                    </div>
+                </div>
+                <div className="addWalletModalInput">
+                    <div style={{ "color": "white", "font-size": "0.75rem", "white-space": "nowrap", "display": "flex", "align-items": "center" }}>Secret key</div>
+                    <div style={{ "width": "70%", "display": "flex" }}>
+                        <div style={{ "width": "100%" }}>
+                            <input value={inputAddress} onChange={handleInputChange} style={{ "width": "100%", "height": "100%" }} />
+                        </div>
+                    </div>
+                </div>
+                <div className="addWalletModalSelect">
+                    <div className="modalBtn" style={{ "border": "1px solid white" }} onClick={() => {
+                        setClickInputAddressModal("none");
+                        setClickCEXModal("none");
+                        setClickBinanceModal("none");
+                        setInputAddress("");
+                    }}>Cancel</div>
+                    <div className="modalBtn" style={{ "border": "1px solid #3C89E8", "background-color": "#3C89E8" }} onClick={() => {
+                        // handleAddClick();
+                        setClickInputAddressModal("none");
+                        setClickCEXModal("none");
+                        setClickBinanceModal("none");
+                        setInputAddress("");
+                    }}>OK</div>
                 </div>
             </div>
         </div>
