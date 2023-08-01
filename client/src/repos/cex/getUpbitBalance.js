@@ -1,9 +1,14 @@
 import authAPI from "../../api/authAPI"
 import { v4 as uuidv4 } from "uuid"
+import utilsAPI from "../../api/utilsAPI"
 
 const getUpbitBalance = async () => {
     const access_key = "CtlxwKO2IfgcvBJKnWUfa4OqyYmYa94BezDvqzxP"
     const secret_key = "JpaAEPu6KiQEcxAdkRdaxx2gCf5kKWysFvX9Hljq"
+
+    const usdRate = await utilsAPI.get("/get-exchange-rates").then((response) => {
+        return response.data;
+    });
 
     const payload = {
         access_key: access_key,
@@ -22,14 +27,13 @@ const getUpbitBalance = async () => {
             tokenInfo: {
                 symbol: currency,
                 price: {
-                    rate: Number(avg_buy_price),
+                    rate: Number(avg_buy_price) / usdRate,
                 },
                 decimals: 0,
             }
         }
     });
-
-    console.log(tokens);
+    
     return tokens;
 }
 

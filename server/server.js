@@ -30,11 +30,13 @@ app.use(cors({
 const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
 const historyRouter = require("./routes/history");
+const utilsRouter = require("./routes/utils");
 
 // router 객체 사용하기
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/history", historyRouter);
+app.use("/api/v1/utils", utilsRouter);
 
 // 서버 시작
 app.listen(PORT, () => {
